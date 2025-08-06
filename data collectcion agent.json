@@ -1,0 +1,360 @@
+{
+  "name": "Examm",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -352,
+        -32
+      ],
+      "id": "906e4766-4fbc-40a6-b6a2-4efde4e2711d",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=TSLA&interval=5min&apikey=T91GB5EP4UXUKEBJ",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        32,
+        448
+      ],
+      "id": "d936eddf-ce7e-47d1-b612-615723fee077",
+      "name": "Get Data From Apha vantage"
+    },
+    {
+      "parameters": {
+        "url": "https://api.stlouisfed.org/fred/series/observations?series_id=FEDFUNDS&api_key=75955827ccf78039b90a6ecb734de6cf&file_type=json",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        288,
+        480
+      ],
+      "id": "a5387378-83ab-4026-a3af-aa7899debd0a",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        -32
+      ],
+      "id": "f02a02f5-2d69-49a5-a105-742ba8706b1c",
+      "name": "NOOP A"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        256,
+        -32
+      ],
+      "id": "9f754de1-6ae3-4f53-a80d-0be5edb71875",
+      "name": "NOOP C"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        48,
+        -32
+      ],
+      "id": "8eea202b-34df-46f4-aa21-50900c90fe06",
+      "name": "NOOP B"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        528,
+        -32
+      ],
+      "id": "7911d4c0-da78-41dd-a744-81673aeda906",
+      "name": "NOOP D"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        960,
+        -32
+      ],
+      "id": "801577e9-395c-441d-a742-74b384db7ea1",
+      "name": "NOOP E"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        -32
+      ],
+      "id": "b656c08f-dc18-4e4c-a76b-fbd7df3939cc",
+      "name": "NOOP F"
+    },
+    {
+      "parameters": {
+        "options": {
+          "delimiter": ",",
+          "encoding": "utf-8",
+          "headerRow": true
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        480
+      ],
+      "id": "e7c5a59e-a75d-4af5-a7b4-6a4da046c896",
+      "name": "parse sentiment dataset"
+    },
+    {
+      "parameters": {
+        "options": {
+          "delimiter": ",",
+          "encoding": "utf-8",
+          "headerRow": true
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        512
+      ],
+      "id": "3f269d3d-1542-4f4f-ae6b-08841c93672c",
+      "name": "Parse hr analytics dataset"
+    },
+    {
+      "parameters": {
+        "options": {
+          "delimiter": ",",
+          "encoding": "utf-8",
+          "headerRow": true
+        }
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        768,
+        496
+      ],
+      "id": "6a988139-4b8c-4060-a0c3-e59edf03d298",
+      "name": "Parse stock market dataset"
+    },
+    {
+      "parameters": {
+        "url": "https://drive.google.com/uc?export=download&id=1J87dtU9vCdBcldYnhAZk71GEcwoh8NyY",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        736,
+        -32
+      ],
+      "id": "b5eeddb6-4dc1-48f8-a24c-80739670ddb6",
+      "name": "Read StockMarket Dataset"
+    },
+    {
+      "parameters": {
+        "url": "https://drive.google.com/uc?export=download&id=1LxIbqc0hPnRoFssUeH09nl_ZG8G7IfNy",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        976,
+        208
+      ],
+      "id": "175f543b-b516-4b01-a46f-df170c8a0c5b",
+      "name": "Read HR analytics dataset"
+    },
+    {
+      "parameters": {
+        "url": "https://drive.google.com/uc?export=download&id=1MpHLJvDQkb_DFwAGxQqpSu17tsbenaDm",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1536,
+        -30.820958083832366
+      ],
+      "id": "6ba2e115-8baf-48a5-9560-c8c670ed866a",
+      "name": "HTTP Request1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "NOOP A",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NOOP A": {
+      "main": [
+        [
+          {
+            "node": "NOOP B",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NOOP B": {
+      "main": [
+        [
+          {
+            "node": "NOOP C",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Data From Apha vantage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NOOP C": {
+      "main": [
+        [
+          {
+            "node": "NOOP D",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NOOP D": {
+      "main": [
+        [
+          {
+            "node": "NOOP E",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read StockMarket Dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NOOP E": {
+      "main": [
+        [
+          {
+            "node": "NOOP F",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read HR analytics dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NOOP F": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read StockMarket Dataset": {
+      "main": [
+        [
+          {
+            "node": "Parse stock market dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read HR analytics dataset": {
+      "main": [
+        [
+          {
+            "node": "Parse hr analytics dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "parse sentiment dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "88553a43-1473-4678-baa4-53314610276f",
+  "meta": {
+    "instanceId": "f9ebf6a248251284db9666e0f62597a2c4e4eae08c6c355ae9613fc5cc774668"
+  },
+  "id": "xXdsbUkasymCzG5G",
+  "tags": []
+}

@@ -1,0 +1,100 @@
+{
+  "name": "storage agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "store-data",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -160,
+        -16
+      ],
+      "id": "590ab98e-11da-4ba8-8c7e-03c510800dd6",
+      "name": "Webhook",
+      "webhookId": "a0208c43-3022-43bf-93f6-2fbde1650c90"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "18X9vk-TSPdve9F75OEy1oY7EEsny9lrZI-kQOygGAQk",
+          "mode": "list",
+          "cachedResultName": "Parsed_Results",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18X9vk-TSPdve9F75OEy1oY7EEsny9lrZI-kQOygGAQk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "StockData",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18X9vk-TSPdve9F75OEy1oY7EEsny9lrZI-kQOygGAQk/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Date",
+              "lookupValue": "={{ $json[\"Date\"] }}"
+            },
+            {
+              "lookupColumn": "Stock Symbol",
+              "lookupValue": "={{ $json[\"Stock Symbol\"] }}"
+            },
+            {
+              "lookupColumn": "Close ",
+              "lookupValue": "={{ $json[\"Close\"] }}"
+            },
+            {
+              "lookupColumn": "macd",
+              "lookupValue": "={{ $json[\"macd\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        48,
+        -16
+      ],
+      "id": "86a77d78-5677-4187-bc76-16cd05465a82",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ME5L9EdZssdduGEB",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "eee0362b-eb5a-4433-b6bc-0042880268f5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f9ebf6a248251284db9666e0f62597a2c4e4eae08c6c355ae9613fc5cc774668"
+  },
+  "id": "OHUqc1KVxQW7N17J",
+  "tags": []
+}

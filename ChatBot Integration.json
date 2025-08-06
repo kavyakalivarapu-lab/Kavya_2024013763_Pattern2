@@ -1,0 +1,151 @@
+{
+  "name": "ChatBot Integration",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "b55b2a93-a944-4c28-b867-88dfbc3211a6",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a7ec3292-9e1f-46bc-ac4d-f7986cfcce8d",
+      "name": "Webhook",
+      "webhookId": "b55b2a93-a944-4c28-b867-88dfbc3211a6"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6b177ab7-e75c-4c03-9af3-60adb53133ca",
+              "name": "message",
+              "value": "={{ $jsonbody\"][\"message\"] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "9adb823e-c2a7-48d9-95a7-d2c6f2435e24",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json[\"rsi\"]}}",
+                    "rightValue": 30,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    },
+                    "id": "cccf1dea-cce3-460e-a531-85af557f7757"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "ee449bfa-4e30-4f9e-a217-f09ad71c17e1",
+      "name": "checkRSI"
+    },
+    {
+      "parameters": {
+        "to": "9075020142",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "7ad452e8-11b3-4286-a097-251a8941f773",
+      "name": "Send an SMS/MMS/WhatsApp message",
+      "credentials": {
+        "twilioApi": {
+          "id": "1p3vtOdTkgwaXReO",
+          "name": "Twilio account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "checkRSI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "checkRSI": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a3737fb8-2b9d-482e-91b5-daf7f13f7133",
+  "meta": {
+    "instanceId": "f9ebf6a248251284db9666e0f62597a2c4e4eae08c6c355ae9613fc5cc774668"
+  },
+  "id": "pZ2qPoiTIzx0yvwa",
+  "tags": []
+}

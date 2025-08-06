@@ -1,0 +1,488 @@
+{
+  "name": "analysis agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "a5f23cb8-37c1-4056-a9f5-0e260a62de73",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -240,
+        0
+      ],
+      "id": "f30f18c8-57b1-42af-a159-9e7d2164bfb1",
+      "name": "Webhook",
+      "webhookId": "a5f23cb8-37c1-4056-a9f5-0e260a62de73",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "18X9vk-TSPdve9F75OEy1oY7EEsny9lrZI-kQOygGAQk",
+          "mode": "list",
+          "cachedResultName": "Parsed_Results",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18X9vk-TSPdve9F75OEy1oY7EEsny9lrZI-kQOygGAQk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "StockData",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18X9vk-TSPdve9F75OEy1oY7EEsny9lrZI-kQOygGAQk/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -16,
+        0
+      ],
+      "id": "3f46e0f5-db6d-47c4-bf69-9ece0daa1de9",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ME5L9EdZssdduGEB",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-3.5-turbo",
+          "mode": "list",
+          "cachedResultName": "gpt-3.5-turbo"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        208
+      ],
+      "id": "8f31b139-c41f-417e-a541-12f283e14b22",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "d1TgcEfFNM78ebCs",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={\n  \"stock\": \"{{ $json.stock }}\",\n  \"rsi\": {{ $json.rsi }},\n  \"macd\": {{ $json.macd }},\n  \"sentiment_score\": {{ $json.sentiment_score }},\n  \"price\": {{ $json.price }},\n  \"moving_average\": {{ $json.moving_average }}\n}\n",
+        "options": {
+          "systemMessage": "You are a stock analysis assistant. Based on technical indicators like RSI, MACD, sentiment score, and price, generate a brief analysis and determine if an alert should be raised. Alert should be true if RSI > 70 or sentiment_score < -0.5.\nReturn a JSON with: analysis_summary, alert: true/false\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        544,
+        0
+      ],
+      "id": "a20af52b-e62a-42ca-bbad-cec768d50cfe",
+      "name": "alert agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze the following stock data:\nStock: {{ $json[\"stock\"] }},\nRSI: {{ $json[\"rsi\"] }},\nMACD: {{ $json[\"macd\"] }},\nSentiment Score: {{ $json[\"sentiment_score\"] }},\nPrice: {{ $json[\"price\"] }},\nMoving Average: {{ $json[\"moving_average\"] }}.\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a financial analyst AI assistant. \nYou will be given JSON data that contains economic indicators like date, RSI, inflation, job change scores, and sentiment scores. \nAnalyze the data and return:\n- A short summary of the market trend\n- If any indicators suggest a warning or alert\n- A signal: “Buy”, “Sell”, or “Hold” based on the data\nKeep the tone professional and concise.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        192,
+        0
+      ],
+      "id": "3d30dfb6-526b-48c6-b698-f7707464c668",
+      "name": "analysis agent"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bb5023dc-7b0c-4f53-a37f-aa99db283430",
+              "leftValue": "={{ $json.alert }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        896,
+        0
+      ],
+      "id": "2fce48f2-1bc7-4bd9-992e-5411fc1d710b",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "to": "9075020142",
+        "message": "=📉 Stock Alert: {{ $json.stock }} ⚠️ {{ $json.message }} 🔴 Priority: {{ $json.priority }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        -96
+      ],
+      "id": "d659aef1-29f7-49a7-86c1-f91d8ecba4ba",
+      "name": "Send an SMS/MMS/WhatsApp message",
+      "credentials": {
+        "twilioApi": {
+          "id": "1p3vtOdTkgwaXReO",
+          "name": "Twilio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-3.5-turbo",
+          "mode": "list",
+          "cachedResultName": "gpt-3.5-turbo"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        976,
+        304
+      ],
+      "id": "cd257226-2f8e-4e92-a2cb-d1447031f059",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "d1TgcEfFNM78ebCs",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a financial analysis assistant. Based on the parsed stock market data provided to you:\n\n1. Generate a concise daily market summary, including key stock movements or index changes.\n2. Include a brief portfolio performance analysis based on any relevant price or trend data.\n3. Identify any observable market trends and offer short-term predictions if possible.\n\nEnsure the output is simple, readable, and suitable for sharing in a daily report.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1104,
+        96
+      ],
+      "id": "4e61d91c-9dea-4446-8e98-5aa9bf339839",
+      "name": "Reporting Agent"
+    },
+    {
+      "parameters": {
+        "jsCode": "const report = [];\n\nfor (const item of items) {\n  const { stock, rsi, signal, date } = item.json;\n\n  report.push(\n    `Stock: ${stock || 'N/A'}\\nDate: ${date || 'N/A'}\\nRSI: ${rsi || 'N/A'}\\nSignal: ${signal || 'N/A'}`\n  );\n}\n\nreturn [\n  {\n    json: {\n      summary: report.join('\\n\\n---\\n\\n')\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1456,
+        96
+      ],
+      "id": "27918352-87fa-4a08-81df-b669792271ed",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "18X9vk-TSPdve9F75OEy1oY7EEsny9lrZI-kQOygGAQk",
+          "mode": "list",
+          "cachedResultName": "Parsed_Results",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18X9vk-TSPdve9F75OEy1oY7EEsny9lrZI-kQOygGAQk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "StockData",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/18X9vk-TSPdve9F75OEy1oY7EEsny9lrZI-kQOygGAQk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "summary": "={{ $json[\"summary\"] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Stock Symbol",
+              "displayName": "Stock Symbol",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Close ",
+              "displayName": "Close ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sentiment Score ",
+              "displayName": "Sentiment Score ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Volatility",
+              "displayName": "Volatility",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "rsi",
+              "displayName": "rsi",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "macd",
+              "displayName": "macd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sentiment",
+              "displayName": "sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "news_headline",
+              "displayName": "news_headline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "risk_index",
+              "displayName": "risk_index",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1664,
+        96
+      ],
+      "id": "98cc7d32-dbb7-4832-be64-c22f306c3b71",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ME5L9EdZssdduGEB",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "analysis agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "analysis agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "analysis agent": {
+      "main": [
+        [
+          {
+            "node": "alert agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "alert agent": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send an SMS/MMS/WhatsApp message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reporting Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Reporting Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reporting Agent": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d626bcda-11c7-48e8-8301-c6b28b17f662",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f9ebf6a248251284db9666e0f62597a2c4e4eae08c6c355ae9613fc5cc774668"
+  },
+  "id": "FddWLJGspKqq8jkN",
+  "tags": []
+}
